@@ -94,29 +94,37 @@ function fetchMemories(category) {
         });
 }
 
-function setupPushNotifications() {
+// BİLDİRİM FONKSİYONU - GITHUB PAGES ALT KLASÖR SORUNU İÇİN GÜNCELLENDİ
+async function setupPushNotifications() {
     console.log("Bildirim kurulumu başlatılıyor...");
-    const messaging = firebase.messaging();
-    messaging.requestPermission().then(() => {
+    
+    try {
+        const messaging = firebase.messaging();
+        
+        await messaging.requestPermission();
         console.log('Bildirim izni başarıyla alındı.');
-        alert("Bildirimlere başarıyla abone oldunuz!");
-        return messaging.getToken();
-    }).then(token => {
+
+        const swRegistration = await navigator.serviceWorker.ready;
+        console.log('Service Worker hazır:', swRegistration);
+
+        const token = await messaging.getToken({ serviceWorkerRegistration: swRegistration });
+        
         if (token) {
             console.log('Cihaz FCM Jetonu:', token);
-            // KULLANICIYI "all" KANALINA ABONE YAPAN KRİTİK KOD
-            messaging.subscribeToTopic("all")
-                .then(() => console.log("'all' kanalına başarıyla abone olundu."))
-                .catch(err => console.error("Kanala abone olurken bir hata oluştu:", err));
+            await messaging.subscribeToTopic("all");
+            console.log("'all' kanalına başarıyla abone olundu.");
+            alert("Bildirimlere başarıyla abone oldunuz!");
         } else {
             console.log('Jeton alınamadı.');
+            alert("Jeton alınamadı. Tarayıcınızın desteklediğinden emin olun.");
         }
-    }).catch(err => {
-        console.error('Bildirim izni istenirken bir hata oluştu: ', err);
-        alert("Bildirim izni alınamadı. Lütfen tarayıcı ayarlarınızı kontrol edin.");
-    });
 
-    messaging.onMessage((payload) => {
+    } catch (err) {
+        console.error('Bildirim kurulumu sırasında hata oluştu: ', err);
+        alert("Bildirim izni alınamadı. Lütfen tarayıcı ayarlarınızı ve site adresini kontrol edin.");
+    }
+
+    firebase.messaging().onMessage((payload) => {
         console.log('Uygulama açıkken mesaj alındı: ', payload);
         alert('Yeni Bildirim: ' + payload.notification.title);
     });
@@ -251,4 +259,3 @@ memoriesList.addEventListener('submit', (e) => {
         });
     }
 });
-
