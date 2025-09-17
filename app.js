@@ -147,8 +147,6 @@ auth.onAuthStateChanged(user => {
     }
 });
 
-// ... (KODUN GERİ KALANI DEĞİŞMEDEN AYNI KALIYOR) ...
-
 addMemoryForm.addEventListener('submit', (e) => {
     e.preventDefault();
     const text = memoryText.value;
