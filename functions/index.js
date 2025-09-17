@@ -1,25 +1,35 @@
 const functions = require("firebase-functions");
 const admin = require("firebase-admin");
+const cors = require("cors")({origin: true}); // CORS kütüphanesini etkinleştir
 
 admin.initializeApp();
 
-// YENİ EKLENDİ: Tarayıcıdan gelen token'ı bir konuya abone yapan fonksiyon
+// YENİ GÜNCELLENMİŞ ABONELİK FONKSİYONU
 exports.subscribeTokenToTopic = functions.region("europe-west1")
-  .https.onCall(async (data, context) => {
-    const { token, topic } = data;
-    if (!token || !topic) {
-      throw new functions.https.HttpsError('invalid-argument', 'Token ve topic gereklidir.');
-    }
-    try {
-      // Admin SDK kullanarak token'ı konuya abone yap
-      await admin.messaging().subscribeToTopic(token, topic);
-      console.log(`Token ${token} başarıyla ${topic} konusuna abone edildi.`);
-      return { success: true, message: `Başarıyla ${topic} konusuna abone olundu.` };
-    } catch (error) {
-      console.error(`${topic} konusuna abone olurken hata oluştu:`, error);
-      throw new functions.https.HttpsError('internal', 'Abonelik işlemi başarısız oldu.');
-    }
+  .https.onRequest((req, res) => {
+    // CORS isteğini işlemesi için fonksiyonu cors middleware'i ile sarmala
+    cors(req, res, async () => {
+      try {
+        const { token, topic } = req.body.data; // Veriyi artık isteğin gövdesinden alıyoruz
+
+        if (!token || !topic) {
+          console.error("Token ve topic gerekli.");
+          res.status(400).send({error: "Token ve topic gereklidir."});
+          return;
+        }
+
+        await admin.messaging().subscribeToTopic(token, topic);
+        
+        console.log(`Token ${token} başarıyla ${topic} konusuna abone edildi.`);
+        res.status(200).send({success: true, message: `Başarıyla ${topic} konusuna abone olundu.`});
+
+      } catch (error) {
+        console.error(`${req.body.data.topic} konusuna abone olurken hata oluştu:`, error);
+        res.status(500).send({error: "Abonelik işlemi başarısız oldu."});
+      }
+    });
   });
+
 
 // YENİ ANİ EKLENDİĞİNDE OTOMATİK ÇALIŞAN FONKSİYON (Değişiklik yok)
 exports.yeniAniBildirimiGonder = functions.region("europe-west1")
@@ -38,7 +48,6 @@ exports.yeniAniBildirimiGonder = functions.region("europe-west1")
       },
       topic: "all",
     };
-
     try {
       await admin.messaging().send(payload);
       console.log("Bildirim 'all' kanalına başarıyla gönderildi.");
@@ -48,5 +57,6 @@ exports.yeniAniBildirimiGonder = functions.region("europe-west1")
       return null;
     }
   });
+
 
 
