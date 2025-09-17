@@ -17,7 +17,8 @@ const overlay = document.getElementById('overlay');
 const auth = firebase.auth();
 const db = firebase.firestore();
 const storage = firebase.storage();
-const functions = firebase.functions(); // Cloud Functions'ı kullanmak için eklendi
+// GÜNCELLENDİ: Fonksiyonlar doğru bölge belirtilerek başlatılıyor
+const functions = firebase.app().functions('europe-west1');
 let unsubscribeMemories = null;
 
 function openSidebar() {
@@ -95,7 +96,6 @@ function fetchMemories(category) {
         });
 }
 
-// BİLDİRİM FONKSİYONU - DOĞRU ABONELİK YÖNTEMİYLE GÜNCELLENDİ
 async function setupPushNotifications() {
     console.log("Bildirim kurulumu başlatılıyor...");
     const messaging = firebase.messaging();
@@ -109,8 +109,6 @@ async function setupPushNotifications() {
 
         if (token) {
             console.log('Cihaz FCM Jetonu:', token);
-
-            // Yeni ve doğru yöntem: Token'ı sunucuya gönderip abone olma işlemini orada yaptır
             const subscribe = functions.httpsCallable('subscribeTokenToTopic');
             await subscribe({ token: token, topic: 'all' });
             
@@ -148,6 +146,8 @@ auth.onAuthStateChanged(user => {
         if (unsubscribeMemories) unsubscribeMemories();
     }
 });
+
+// ... (KODUN GERİ KALANI DEĞİŞMEDEN AYNI KALIYOR) ...
 
 addMemoryForm.addEventListener('submit', (e) => {
     e.preventDefault();
