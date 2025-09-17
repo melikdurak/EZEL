@@ -1,0 +1,265 @@
+body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    background-color: #f4f4f9;
+    color: #333;
+    margin: 0;
+    padding: 20px;
+    line-height: 1.6;
+}
+
+header {
+    background-color: #5b4b8a;
+    color: white;
+    padding: 1rem;
+    text-align: center;
+    border-radius: 8px;
+    margin-bottom: 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    position: relative; /* Menü ve başlık konumlandırması için önemli */
+}
+
+header h1 {
+    margin: 0;
+    position: absolute; /* Başlığın diğer elementlerden bağımsız ortalanması için */
+    left: 50%;
+    transform: translateX(-50%);
+}
+
+main {
+    max-width: 800px;
+    margin: 0 auto;
+    background: white;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+section {
+    margin-bottom: 30px;
+}
+
+h2 {
+    border-bottom: 2px solid #5b4b8a;
+    padding-bottom: 10px;
+    color: #5b4b8a;
+}
+
+form {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+input[type="email"],
+input[type="password"],
+textarea,
+select { /* Kategori seçimi için 'select' eklendi */
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    font-size: 16px;
+    background-color: #fff;
+}
+
+textarea {
+    min-height: 100px;
+    resize: vertical;
+}
+
+button {
+    background-color: #7858a6;
+    color: white;
+    border: none;
+    padding: 12px 20px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 16px;
+    transition: background-color 0.3s;
+}
+
+button:hover {
+    background-color: #5b4b8a;
+}
+
+#user-info {
+    margin-left: auto; /* Oturum bilgilerini sağa yaslar */
+}
+
+#logout-button {
+    background-color: #e57373;
+}
+
+#logout-button:hover {
+    background-color: #d32f2f;
+}
+
+.memory-card {
+    background: #fdfdfd;
+    border: 1px solid #eee;
+    padding: 15px;
+    margin-bottom: 15px;
+    border-radius: 8px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+}
+
+.delete-button {
+    background-color: #e57373;
+    color: white;
+    border: none;
+    padding: 5px 10px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 12px;
+    float: right;
+    transition: background-color 0.3s;
+}
+
+.delete-button:hover {
+    background-color: #d32f2f;
+}
+
+.memory-image {
+    width: 100%;
+    max-height: 400px;
+    object-fit: cover;
+    border-radius: 5px;
+    margin-bottom: 10px;
+}
+
+.actions-container {
+    margin-top: 15px;
+    padding-top: 10px;
+    border-top: 1px solid #eee;
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.like-button {
+    background: none;
+    border: 1px solid #ccc;
+    color: #555;
+    padding: 5px 10px;
+    border-radius: 20px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.like-button.liked {
+    background-color: #ffc0cb;
+    color: #d83b01;
+    border-color: #ffc0cb;
+}
+
+.like-button .heart {
+    font-size: 18px;
+}
+
+.comments-section {
+    margin-top: 15px;
+}
+
+.comment {
+    background-color: #f9f9f9;
+    padding: 8px;
+    border-radius: 5px;
+    margin-bottom: 5px;
+    font-size: 14px;
+}
+
+.comment small {
+    font-weight: bold;
+    color: #5b4b8a;
+}
+
+.comment-form {
+    display: flex;
+    margin-top: 10px;
+    gap: 5px;
+}
+
+.comment-form input {
+    flex-grow: 1;
+    padding: 8px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+}
+
+.comment-form button {
+    padding: 8px 12px;
+    font-size: 14px;
+}
+
+
+/* ============================================= */
+/* YENİ EKLENEN KENAR MENÜ (SIDEBAR) STİLLERİ      */
+/* ============================================= */
+#menu-icon {
+    font-size: 24px;
+    cursor: pointer;
+    padding: 5px 10px;
+    z-index: 1001; /* Diğer elementlerin üstünde kalması için */
+}
+
+#sidebar {
+    height: 100%;
+    width: 250px;
+    position: fixed;
+    z-index: 1000;
+    top: 0;
+    left: 0;
+    background-color: #333;
+    overflow-x: hidden;
+    padding-top: 60px;
+    transition: 0.5s;
+    transform: translateX(-250px); /* Başlangıçta ekranın dışında, gizli */
+}
+
+#sidebar.open {
+    transform: translateX(0); /* Açık olduğunda ekrana gelir */
+}
+
+.sidebar-link {
+    padding: 10px 15px;
+    text-decoration: none;
+    font-size: 20px;
+    color: #818181;
+    display: block;
+    transition: 0.3s;
+}
+
+.sidebar-link:hover {
+    color: #f1f1f1;
+}
+
+#overlay {
+    position: fixed;
+    display: none; /* Başlangıçta gizli */
+    width: 100%;
+    height: 100%;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0,0,0,0.5);
+    z-index: 999;
+    cursor: pointer;
+}
+
+#overlay.show {
+    display: block; /* Menü açıldığında görünür olur */
+}
+
+
+@media screen and (max-width: 768px) {
+    body { padding: 10px; }
+    main { padding: 15px; }
+    header h1 { font-size: 1.2rem; }
+    input[type="email"], input[type="password"], textarea, button, select { font-size: 1rem; }
+    .comment-form input { padding: 10px; }
+
+}
