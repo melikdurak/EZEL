@@ -1,23 +1,25 @@
 const functions = require("firebase-functions");
 const admin = require("firebase-admin");
-const cors = require("cors")({origin: true}); // CORS kütüphanesini etkinleştir
+const cors = require("cors")({origin: true}); // CORS kütüphanesini 'herkese izin ver' modunda etkinleştir
 
 admin.initializeApp();
 
-// YENİ GÜNCELLENMİŞ ABONELİK FONKSİYONU
+// YENİ GÜNCELLENMİŞ ABONELİK FONKSİYONU (CORS DÜZELTMESİYLE)
 exports.subscribeTokenToTopic = functions.region("europe-west1")
   .https.onRequest((req, res) => {
     // CORS isteğini işlemesi için fonksiyonu cors middleware'i ile sarmala
     cors(req, res, async () => {
       try {
-        const { token, topic } = req.body.data; // Veriyi artık isteğin gövdesinden alıyoruz
+        // app.js'den gelen veriyi isteğin gövdesinden (body) alıyoruz
+        const { token, topic } = req.body.data; 
 
         if (!token || !topic) {
           console.error("Token ve topic gerekli.");
-          res.status(400).send({error: "Token ve topic gereklidir."});
+          res.status(400).send({error: "Token ve topic parametreleri eksik."});
           return;
         }
 
+        // Admin SDK kullanarak token'ı konuya (topic) abone yap
         await admin.messaging().subscribeToTopic(token, topic);
         
         console.log(`Token ${token} başarıyla ${topic} konusuna abone edildi.`);
@@ -25,7 +27,7 @@ exports.subscribeTokenToTopic = functions.region("europe-west1")
 
       } catch (error) {
         console.error(`${req.body.data.topic} konusuna abone olurken hata oluştu:`, error);
-        res.status(500).send({error: "Abonelik işlemi başarısız oldu."});
+        res.status(500).send({error: "Abonelik işlemi sırasında sunucuda bir hata oluştu."});
       }
     });
   });
@@ -57,6 +59,3 @@ exports.yeniAniBildirimiGonder = functions.region("europe-west1")
       return null;
     }
   });
-
-
-
