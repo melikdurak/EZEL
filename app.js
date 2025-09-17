@@ -17,6 +17,7 @@ const overlay = document.getElementById('overlay');
 const auth = firebase.auth();
 const db = firebase.firestore();
 const storage = firebase.storage();
+const functions = firebase.functions(); // Cloud Functions'ı kullanmak için eklendi
 let unsubscribeMemories = null;
 
 function openSidebar() {
@@ -94,47 +95,41 @@ function fetchMemories(category) {
         });
 }
 
-// BİLDİRİM FONKSİYONU - GITHUB PAGES ALT KLASÖR SORUNU İÇİN GÜNCELLENDİ
+// BİLDİRİM FONKSİYONU - DOĞRU ABONELİK YÖNTEMİYLE GÜNCELLENDİ
 async function setupPushNotifications() {
     console.log("Bildirim kurulumu başlatılıyor...");
+    const messaging = firebase.messaging();
     
     try {
-        const messaging = firebase.messaging();
-        
-        // 1. Kullanıcıdan bildirim izni iste
         await messaging.requestPermission();
         console.log('Bildirim izni başarıyla alındı.');
 
-        // 2. index.html tarafından kaydedilen service worker'ın hazır olmasını bekle
         const swRegistration = await navigator.serviceWorker.ready;
-        console.log('Service Worker hazır:', swRegistration);
-
-        // 3. Token'ı, tam yolu belli olan service worker'ı kullanarak al
         const token = await messaging.getToken({ serviceWorkerRegistration: swRegistration });
-        
+
         if (token) {
             console.log('Cihaz FCM Jetonu:', token);
-            // 4. Token alındıktan sonra kullanıcıyı 'all' kanalına abone yap
-            await messaging.subscribeToTopic("all");
-            console.log("'all' kanalına başarıyla abone olundu.");
+
+            // Yeni ve doğru yöntem: Token'ı sunucuya gönderip abone olma işlemini orada yaptır
+            const subscribe = functions.httpsCallable('subscribeTokenToTopic');
+            await subscribe({ token: token, topic: 'all' });
+            
+            console.log("'all' kanalına abonelik isteği gönderildi.");
             alert("Bildirimlere başarıyla abone oldunuz!");
         } else {
-            console.log('Jeton alınamadı.');
-            alert("Jeton alınamadı. Tarayıcınızın desteklediğinden emin olun.");
+            throw new Error('Jeton alınamadı.');
         }
 
     } catch (err) {
         console.error('Bildirim kurulumu sırasında hata oluştu: ', err);
-        alert("Bildirim izni alınamadı. Lütfen tarayıcı ayarlarınızı ve site adresini kontrol edin.");
+        alert("Bildirim izni veya abonelik alınamadı. Lütfen tarayıcı ayarlarınızı kontrol edin.");
     }
 
-    // Uygulama açıkken gelen mesajları dinle
-    firebase.messaging().onMessage((payload) => {
+    messaging.onMessage((payload) => {
         console.log('Uygulama açıkken mesaj alındı: ', payload);
         alert('Yeni Bildirim: ' + payload.notification.title);
     });
 }
-
 
 subscribeButton.addEventListener('click', setupPushNotifications);
 
@@ -226,7 +221,7 @@ memoriesList.addEventListener('click', (e) => {
     }
     const likeButton = e.target.closest('.like-button');
     if (likeButton) {
-        const card = e.targe.closest('.memory-card');
+        const card = e.target.closest('.memory-card');
         const docId = card.dataset.id;
         const docRef = db.collection("anilar").doc(docId);
         if (likeButton.classList.contains('liked')) {
