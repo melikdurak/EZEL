@@ -68,6 +68,7 @@
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-storage.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-messaging.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-functions.js"></script>
     
     <script>
       const firebaseConfig = {
@@ -86,7 +87,6 @@
     <script>
       if ('serviceWorker' in navigator) {
         window.addEventListener('load', () => {
-          // Service worker'a yeni ve doğru yolu belirtiyoruz: /EZEL/
           navigator.serviceWorker.register('/EZEL/firebase-messaging-sw.js')
             .then(reg => console.log('Service worker başarıyla kaydedildi.', reg))
             .catch(err => console.log('Service worker kaydedilemedi. Hata:', err));
