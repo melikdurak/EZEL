@@ -72,7 +72,7 @@
     
     <script>
       const firebaseConfig = {
-        apiKey: "AIzaSyDNTtCZDnfG8tNa4HmJaMJyFYYiJBHWQyI",
+        apiKey: "AIzaSyDNTtCZDnfG8tNa4HmJaMJyFYYiJBHWQyI", // Lütfen bu anahtarı kendi güncel anahtarınızla değiştirin
         authDomain: "nem18-5c2af.firebaseapp.com",
         projectId: "nem18-5c2af",
         storageBucket: "nem18-5c2af.firebasestorage.app",
@@ -87,6 +87,7 @@
     <script>
       if ('serviceWorker' in navigator) {
         window.addEventListener('load', () => {
+          // Service worker'a yeni ve doğru yolu belirtiyoruz: /EZEL/
           navigator.serviceWorker.register('/EZEL/firebase-messaging-sw.js')
             .then(reg => console.log('Service worker başarıyla kaydedildi.', reg))
             .catch(err => console.log('Service worker kaydedilemedi. Hata:', err));
