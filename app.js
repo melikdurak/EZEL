@@ -96,6 +96,7 @@ function fetchMemories(category) {
         });
 }
 
+// BİLDİRİM FONKSİYONU - EN DOĞRU VE MODERN HALİYLE GÜNCELLENDİ
 async function setupPushNotifications() {
     console.log("Bildirim kurulumu başlatılıyor...");
     const messaging = firebase.messaging();
@@ -109,10 +110,12 @@ async function setupPushNotifications() {
 
         if (token) {
             console.log('Cihaz FCM Jetonu:', token);
+
+            // Yeni ve doğru yöntem: Token'ı sunucuya Callable Function ile gönder
             const subscribe = functions.httpsCallable('subscribeTokenToTopic');
             await subscribe({ token: token, topic: 'all' });
             
-            console.log("'all' kanalına abonelik isteği gönderildi.");
+            console.log("'all' kanalına abonelik isteği başarıyla gönderildi.");
             alert("Bildirimlere başarıyla abone oldunuz!");
         } else {
             throw new Error('Jeton alınamadı.');
@@ -120,7 +123,7 @@ async function setupPushNotifications() {
 
     } catch (err) {
         console.error('Bildirim kurulumu sırasında hata oluştu: ', err);
-        alert("Bildirim izni veya abonelik alınamadı. Lütfen tarayıcı ayarlarınızı kontrol edin.");
+        alert("Bildirim izni veya abonelik alınamadı. Lütfen tarayıcı ayarlarınızı veya konsolu kontrol edin.");
     }
 
     messaging.onMessage((payload) => {
