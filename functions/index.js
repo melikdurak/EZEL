@@ -1,35 +1,25 @@
 const functions = require("firebase-functions");
 const admin = require("firebase-admin");
-const cors = require("cors")({origin: true}); // CORS kütüphanesini 'herkese izin ver' modunda etkinleştir
 
 admin.initializeApp();
 
-// YENİ GÜNCELLENMİŞ ABONELİK FONKSİYONU (CORS DÜZELTMESİYLE)
+// YENİ GÜNCELLENMİŞ ABONELİK FONKSİYONU (onCall ile)
 exports.subscribeTokenToTopic = functions.region("europe-west1")
-  .https.onRequest((req, res) => {
-    // CORS isteğini işlemesi için fonksiyonu cors middleware'i ile sarmala
-    cors(req, res, async () => {
-      try {
-        // app.js'den gelen veriyi isteğin gövdesinden (body) alıyoruz
-        const { token, topic } = req.body.data; 
+  .https.onCall(async (data, context) => {
+    const { token, topic } = data;
 
-        if (!token || !topic) {
-          console.error("Token ve topic gerekli.");
-          res.status(400).send({error: "Token ve topic parametreleri eksik."});
-          return;
-        }
+    if (!token || !topic) {
+      throw new functions.https.HttpsError('invalid-argument', 'Token ve topic parametreleri eksik.');
+    }
 
-        // Admin SDK kullanarak token'ı konuya (topic) abone yap
-        await admin.messaging().subscribeToTopic(token, topic);
-        
-        console.log(`Token ${token} başarıyla ${topic} konusuna abone edildi.`);
-        res.status(200).send({success: true, message: `Başarıyla ${topic} konusuna abone olundu.`});
-
-      } catch (error) {
-        console.error(`${req.body.data.topic} konusuna abone olurken hata oluştu:`, error);
-        res.status(500).send({error: "Abonelik işlemi sırasında sunucuda bir hata oluştu."});
-      }
-    });
+    try {
+      await admin.messaging().subscribeToTopic(token, topic);
+      console.log(`Token ${token} başarıyla ${topic} konusuna abone edildi.`);
+      return { success: true, message: `Başarıyla ${topic} konusuna abone olundu.` };
+    } catch (error) {
+      console.error(`${topic} konusuna abone olurken hata oluştu:`, error);
+      throw new functions.https.HttpsError('internal', 'Abonelik işlemi başarısız oldu.');
+    }
   });
 
 
