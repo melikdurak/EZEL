@@ -86,11 +86,8 @@
     <script>
       if ('serviceWorker' in navigator) {
         window.addEventListener('load', () => {
-          // GitHub Pages alt klasöründe (subdirectory) doğru çalışması için
-          // service worker'a tam yolunu belirtiyoruz.
-          // Proje adınız "EZEL" ise yolu /EZEL/ olarak güncelleyin.
-          // Proje adınız "20nem18" ise yolu /20nem18/ olarak güncelleyin.
-          navigator.serviceWorker.register('/20nem18/firebase-messaging-sw.js')
+          // Service worker'a yeni ve doğru yolu belirtiyoruz: /EZEL/
+          navigator.serviceWorker.register('/EZEL/firebase-messaging-sw.js')
             .then(reg => console.log('Service worker başarıyla kaydedildi.', reg))
             .catch(err => console.log('Service worker kaydedilemedi. Hata:', err));
         });
