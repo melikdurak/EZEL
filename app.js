@@ -4,7 +4,7 @@ const appContent = document.getElementById('app-content');
 const userInfo = document.getElementById('user-info');
 const userEmailDisplay = document.getElementById('user-email');
 const logoutButton = document.getElementById('logout-button');
-const subscribeButton = document.getElementById('subscribe-button'); // Bildirim butonu referansı
+const subscribeButton = document.getElementById('subscribe-button');
 const loginForm = document.getElementById('login-form');
 const addMemoryForm = document.getElementById('add-memory-form');
 const addMemoryFormContainer = document.getElementById('add-memory-form-container');
@@ -18,25 +18,23 @@ const overlay = document.getElementById('overlay');
 // ====================================================================
 // ONESIGNAL & SUPABASE KURULUMU
 // ====================================================================
-
-// Lütfen Faz 1'de not aldığınız Supabase bilgilerini buraya yapıştırın.
 const SUPABASE_URL = 'https://ispygaaxodrglbiqvrnd.supabase.co'; 
 const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImlzcHlnYWF4b2RyZ2xiaXF2cm5kIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTgxODM0OTAsImV4cCI6MjA3Mzc1OTQ5MH0.CiUkn2W1xYtBZ_ypYP_Wc1IgJqXXyUCxGVwrE7e9GmA'; 
+const ONESIGNAL_APP_ID = "267a50f0-fde6-4999-a344-65ff9818784f";
 
 // OneSignal Kurulumu
 window.OneSignalDeferred = window.OneSignalDeferred || [];
 OneSignalDeferred.push(function(OneSignal) {
   OneSignal.init({
-    appId: "267a50f0-fde6-4999-a344-65ff9818784f", // Sizin verdiğiniz App ID
+    appId: ONESIGNAL_APP_ID,
   });
 });
 
 const { createClient } = supabase;
 const _supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-
 // ====================================================================
-// KENAR MENÜ (SIDEBAR) KONTROLLERİ (Değişiklik yok)
+// KENAR MENÜ (SIDEBAR) KONTROLLERİ
 // ====================================================================
 function openSidebar() {
     sidebar.classList.add('open');
@@ -66,7 +64,6 @@ sidebar.addEventListener('click', (e) => {
     }
 });
 
-
 // ====================================================================
 // ANILARI GETİRME (SUPABASE İLE)
 // ====================================================================
@@ -81,7 +78,7 @@ async function fetchMemories(category) {
 
     if (error) {
         console.error("Anıları çekerken hata:", error);
-        memoriesList.innerHTML += `<p style="color:red;">Anılar yüklenirken bir hata oluştu.</p>`;
+        memoriesList.innerHTML += `<p style="color:red;">Anılar yüklenirken bir hata oluştu. Supabase RLS ayarlarını kontrol edin.</p>`;
         return;
     }
 
@@ -132,9 +129,8 @@ _supabase.auth.onAuthStateChange((event, session) => {
     handleAuthStateChange(session?.user ?? null);
 });
 
-
 // ====================================================================
-// YENİ: BİLDİRİMLERE ABONE OLMA (ONESIGNAL İLE)
+// BİLDİRİMLERE ABONE OLMA (ONESIGNAL İLE)
 // ====================================================================
 subscribeButton.addEventListener('click', () => {
     OneSignalDeferred.push(function(OneSignal) {
@@ -142,7 +138,6 @@ subscribeButton.addEventListener('click', () => {
         OneSignal.showSlidedownPrompt();
     });
 });
-
 
 // ====================================================================
 // GİRİŞ, ÇIKIŞ VE ANİ EKLEME (SUPABASE İLE)
@@ -178,7 +173,7 @@ addMemoryForm.addEventListener('submit', async (e) => {
     const submitButton = addMemoryForm.querySelector('button[type="submit"]');
     submitButton.disabled = true;
     submitButton.textContent = 'Kaydediliyor...';
-
+    
     let publicImageUrl = null;
     if (file) {
         const filePath = `${user.id}/${Date.now()}-${file.name}`;
@@ -186,14 +181,14 @@ addMemoryForm.addEventListener('submit', async (e) => {
 
         if (uploadError) {
             console.error("Fotoğraf yükleme hatası:", uploadError);
-            alert("Fotoğraf yüklenirken bir hata oluştu.");
+            alert("Fotoğraf yüklenirken bir hata oluştu. Lütfen Supabase Storage ayarlarınızı kontrol edin.");
             submitButton.disabled = false;
             submitButton.textContent = 'Anıyı Kaydet';
             return;
         }
         
-        const { data: { publicUrl } } = _supabase.storage.from('anilar-resimler').getPublicUrl(filePath);
-        publicImageUrl = publicUrl;
+        const { data } = _supabase.storage.from('anilar-resimler').getPublicUrl(filePath);
+        publicImageUrl = data.publicUrl;
     }
     
     const { error: insertError } = await _supabase
@@ -208,7 +203,7 @@ addMemoryForm.addEventListener('submit', async (e) => {
 
     if (insertError) {
         console.error("Anı eklenirken hata:", insertError);
-        alert("Anı eklenirken bir hata oluştu.");
+        alert("Anı eklenirken bir hata oluştu. Lütfen Supabase RLS ayarlarınızı kontrol edin.");
     } else {
         addMemoryForm.reset();
         alert(`'${category}' kategorisine anınız başarıyla eklendi!`);
