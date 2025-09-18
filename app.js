@@ -4,7 +4,7 @@ const appContent = document.getElementById('app-content');
 const userInfo = document.getElementById('user-info');
 const userEmailDisplay = document.getElementById('user-email');
 const logoutButton = document.getElementById('logout-button');
-const subscribeButton = document.getElementById('subscribe-button'); // Bildirim butonu referansı
+const subscribeButton = document.getElementById('subscribe-button'); 
 const loginForm = document.getElementById('login-form');
 const addMemoryForm = document.getElementById('add-memory-form');
 const addMemoryFormContainer = document.getElementById('add-memory-form-container');
@@ -27,6 +27,8 @@ window.OneSignalDeferred = window.OneSignalDeferred || [];
 OneSignalDeferred.push(function(OneSignal) {
   OneSignal.init({
     appId: "267a50f0-fde6-4999-a344-65ff9818784f",
+    serviceWorkerPath: '/EZEL/OneSignalSDKWorker.js', // GitHub Pages alt dizini için doğru yol
+    serviceWorkerUpdaterPath: '/EZEL/OneSignalSDKUpdaterWorker.js' // eğer bu dosyayı da koyarsan
   });
 });
 
@@ -130,7 +132,7 @@ _supabase.auth.onAuthStateChange((event, session) => {
 });
 
 // ====================================================================
-// YENİ: BİLDİRİMLERE ABONE OLMA (ONESIGNAL İLE)
+// BİLDİRİMLERE ABONE OLMA (ONESIGNAL)
 // ====================================================================
 subscribeButton.addEventListener('click', () => {
   OneSignalDeferred.push(function(OneSignal) {
