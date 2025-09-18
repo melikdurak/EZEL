@@ -3,10 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Anı Defterim</title>
-    <meta name="theme-color" content="#5b4b8a">
+    <title>Anı Defterim (Supabase)</title>
+    <meta name="theme-color" content="#3ECF8E">
     <link rel="manifest" href="manifest.json">
     <link rel="stylesheet" href="style.css">
+    <script src="https://cdn.onesignal.com/sdks/web/v16/OneSignalSDK.page.js" defer></script>
 </head>
 <body>
 
@@ -27,7 +28,7 @@
             <button id="logout-button">Çıkış Yap</button>
         </div>
     </header>
-
+    
     <main>
         <section id="login-section">
             <h2>Giriş Yap</h2>
@@ -37,63 +38,27 @@
                 <button type="submit">Giriş</button>
             </form>
         </section>
-
         <section id="app-content" style="display: none;">
-            
             <div id="add-memory-form-container">
                 <h2>Yeni Bir Anı Ekle</h2>
                 <form id="add-memory-form">
                     <textarea id="memory-text" placeholder="Anını buraya yaz..." required></textarea>
                     <label for="memory-photo">Fotoğraf Ekle:</label>
                     <input type="file" id="memory-photo" accept="image/*">
-                    
                     <label for="memory-category">Kategori Seçin:</label>
                     <select id="memory-category" required>
                         <option value="" disabled selected>Lütfen bir kategori seçin</option>
                         <option value="20NM18">20NM18</option>
                         <option value="20NEM22">20NEM22</option>
                     </select>
-
                     <button type="submit">Anıyı Kaydet</button>
                 </form>
             </div>
-
             <div id="memories-list"></div>
-
         </section>
     </main>
 
-    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-storage.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-messaging.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-functions.js"></script>
-    
-    <script>
-      const firebaseConfig = {
-        apiKey: "AIzaSyDNTtCZDnfG8tNa4HmJaMJyFYYiJBHWQyI", // Lütfen bu anahtarı kendi güncel anahtarınızla değiştirin
-        authDomain: "nem18-5c2af.firebaseapp.com",
-        projectId: "nem18-5c2af",
-        storageBucket: "nem18-5c2af.firebasestorage.app",
-        messagingSenderId: "370581331073",
-        appId: "1:370581331073:web:fd3901a0b55bc8ac4b4180"
-      };
-      firebase.initializeApp(firebaseConfig);
-    </script>
-    
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="app.js"></script>
-
-    <script>
-      if ('serviceWorker' in navigator) {
-        window.addEventListener('load', () => {
-          // Service worker'a yeni ve doğru yolu belirtiyoruz: /EZEL/
-          navigator.serviceWorker.register('/EZEL/firebase-messaging-sw.js')
-            .then(reg => console.log('Service worker başarıyla kaydedildi.', reg))
-            .catch(err => console.log('Service worker kaydedilemedi. Hata:', err));
-        });
-      }
-    </script>
-
 </body>
 </html>
